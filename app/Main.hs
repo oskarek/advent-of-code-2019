@@ -12,10 +12,12 @@ import qualified Data.Text                     as T
 import qualified Data.Text.IO                  as TIO
 
 import qualified Day1.Day1                     as Day1
+import qualified Day2.Day2 as Day2
 
 problems :: Map Int Problem
 problems = M.fromList
     [ (1, Day1.problem)
+    , (2, Day2.problem)
     ]
 
 printSolutions :: (Text, Text) -> IO ()
