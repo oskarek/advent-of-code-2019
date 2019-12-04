@@ -1,33 +1,19 @@
-{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import           Data.Map                       ( Map
-                                                , (!?)
-                                                )
+import           Data.Map                       ( Map, (!?) )
 import qualified Data.Map                      as M
-import           Options.Applicative     hiding ( ParseError )
+import           Options.Applicative
 import           Problem
-import           Data.Text                      ( Text )
-import qualified Data.Text                     as T
 import qualified Data.Text.IO                  as TIO
 
 import qualified Day1.Day1                     as Day1
-import qualified Day2.Day2 as Day2
+import qualified Day2.Day2                     as Day2
 
 problems :: Map Int Problem
 problems = M.fromList
     [ (1, Day1.problem)
     , (2, Day2.problem)
     ]
-
-printSolutions :: (Text, Text) -> IO ()
-printSolutions (s1, s2) =
-    TIO.putStrLn
-        $  "Solution to part 1:\n"
-        <> s1
-        <> "\n\n"
-        <> "Solution to part 2:\n"
-        <> s2
 
 main :: IO ()
 main = do
@@ -36,8 +22,7 @@ main = do
         Nothing -> putStrLn $ "Day " ++ show day ++ " problem not solved yet!"
         Just problem -> do
             input <- TIO.readFile ("input/day" ++ show day ++ ".txt")
-            let sol = solveProblem problem input
-            either print printSolutions sol
+            putStrLn $ printSolution problem input
   where
     opts = info
         (day <**> helper)

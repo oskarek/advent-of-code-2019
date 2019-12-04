@@ -3,8 +3,8 @@ module Day2.Day2 ( problem ) where
 
 import           Problem
 import qualified Parsing                       as P
-import           Text.Parsec             hiding ( parse )
-import           Text.Parsec.Text
+import           Text.Megaparsec
+import           Text.Megaparsec.Char
 import           Control.Arrow                  ( (&&&) )
 import qualified Data.Map                      as M
 import           Control.Monad                  ( foldM )
@@ -66,6 +66,6 @@ solve2 boardList = do
   return (100 * noun + verb)
 
 problem :: Problem
-problem = Problem { parse = P.parse (P.int `sepBy` string ",")
+problem = Problem { parser = P.int `sepBy` P.comma
                   , solve = solve1 &&& solve2
                   }

@@ -1,15 +1,18 @@
 {-# LANGUAGE ExistentialQuantification, RecordWildCards #-}
 module Problem where
 
-import           Text.Parsec                    ( ParseError )
+import           Parsing          
 import           Data.Text                      ( Text )
-import qualified Data.Text                     as T
 
 data Problem = forall a b c. (Show b, Show c) =>
-  Problem { parse :: Text -> Either ParseError a
+  Problem { parser :: Parser a
           , solve :: a -> (b, c) }
 
-solveProblem :: Problem -> Text -> Either ParseError (Text, Text)
-solveProblem Problem {..} input = do
-  (sol1, sol2) <- solve <$> parse input
-  return (T.pack (show sol1), T.pack (show sol2))
+printSolutions :: (Show a, Show b) => (a, b) -> String
+printSolutions (s1, s2) =
+  unlines ["Solution to part 1:", show s1, "\nSolution to part 2:", show s2]
+
+printSolution :: Problem -> Text -> String
+printSolution Problem {..} input =
+  let parseRes = solve <$> parse parser input
+  in  either printParseError printSolutions parseRes
