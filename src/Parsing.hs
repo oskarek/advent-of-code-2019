@@ -38,5 +38,8 @@ comma = void (symbol ",")
 parse :: Parser a -> Text -> Either ParseError a
 parse p = Text.Megaparsec.parse p ""
 
+parseAll :: Parser a -> Text -> Either ParseError a
+parseAll p = Parsing.parse (p <* eof)
+
 printParseError :: ParseError -> String
 printParseError = Text.Megaparsec.errorBundlePretty

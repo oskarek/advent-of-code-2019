@@ -14,5 +14,5 @@ printSolutions (s1, s2) =
 
 printSolution :: Problem -> Text -> String
 printSolution Problem {..} input =
-  let parseRes = solve <$> parse parser input
+  let parseRes = solve <$> parseAll parser input
   in  either printParseError printSolutions parseRes
