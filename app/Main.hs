@@ -22,8 +22,8 @@ main = do
       putStrLn $ printSolution problem input
  where
   opts = info
-    (day <**> helper)
+    (dayArg <**> helper)
     (fullDesc <> progDesc "Solve the puzzles for DAY" <> header
       "Advent of Code 2018 solutions"
     )
-  day = argument auto (help "The number of the day to solve" <> metavar "DAY")
+  dayArg = argument auto (help "The number of the day to solve" <> metavar "DAY")

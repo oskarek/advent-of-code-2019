@@ -15,4 +15,4 @@ problem :: Problem
 problem = Problem { parser = many P.int
                   , solve = sumWith f &&& sumWith g
                   }
-  where sumWith f = sum . map f
+  where sumWith h = sum . map h
