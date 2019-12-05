@@ -46,6 +46,12 @@ getProblemNumber = do
                 prevProblem = maximum solvedProblems
             return (prevProblem+1)
 
+createInputFile :: T.Text -> IO ()
+createInputFile n = do
+  let folderPath = fromText "input"
+  let fileName = fromText ("day" <> n <> ".txt")
+  touch $ folderPath </> fileName
+
 createSrcFiles :: T.Text -> IO ()
 createSrcFiles n = do
     let folderPath = fromText (problemFolder n)
@@ -72,6 +78,7 @@ buildProject = proc "stack" ["build", "--test", "--no-run-tests"] empty
 main :: IO ExitCode
 main = do
     n <- T.pack . show <$> getProblemNumber
+    createInputFile n
     createSrcFiles n
     createTestFiles n
     addLinkToReadme n
