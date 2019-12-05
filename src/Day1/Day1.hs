@@ -1,4 +1,4 @@
-module Day1.Day1 ( problem ) where
+module Day1.Day1 where
 
 import           Problem
 import qualified Parsing                       as P
