@@ -1,71 +1,49 @@
 {-# LANGUAGE RecordWildCards #-}
-module Day2.Day2 ( problem ) where
+module Day2.Day2 where
 
 import           Problem
-import qualified Parsing                       as P
-import           Text.Megaparsec
-import           Text.Megaparsec.Char
 import           Control.Arrow                  ( (&&&) )
 import qualified Data.Map                      as M
-import           Control.Monad                  ( foldM )
-import           Data.List                      ( find )
+import           Control.Monad                  ( foldM, (<=<) )
+import qualified Data.List                     as List
+import           Day2.Types
+import qualified Day2.Parser                   as Parser
 
-data Op = Op (Int -> Int -> Int) | Halt
-data Instr = Instr { op :: Op, idx1 :: Int, idx2 :: Int, dest :: Int }
-type Board = M.Map Int Int
+binOpAction :: BinOpType -> Int -> Int -> Int
+binOpAction typ = case typ of
+  Add  -> (+)
+  Mult -> (*)
 
-instrs :: [Int] -> Maybe [Instr]
-instrs []             = Nothing
-instrs (opInt : rest) = do
-  op <- ops M.!? opInt
-  case op of
-    Halt -> Just []
-    Op o ->
-      let (params, rest') = splitAt 3 rest
-      in  case params of
-            [idx1, idx2, dest] -> (Instr op idx1 idx2 dest :) <$> instrs rest'
-            _                  -> Nothing
-  where ops = M.fromList [(1, Op (+)), (2, Op (*)), (99, Halt)]
-
-applyOpcode :: Board -> Instr -> Maybe Board
-applyOpcode board Instr {..} = do
-  arg1 <- board M.!? idx1
-  arg2 <- board M.!? idx2
-  case op of
-    Op op -> Just $ M.insert dest (arg1 `op` arg2) board
-    Halt -> Just board
+applyInstr :: Board -> Instr -> Maybe Board
+applyInstr board instr = case instr of
+  Halt            -> Just board
+  BinOpInstr {..} -> do
+    val <- binOpAction opType <$> board M.!? idx1 <*> board M.!? idx2
+    Just (M.insert dest val board)
 
 applyInput :: (Int, Int) -> Board -> Board
 applyInput (noun, verb) = M.insert 2 verb . M.insert 1 noun
 
-mkBoard :: [Int] -> Board
-mkBoard = M.fromAscList . zip [0..]
+runUntilEndState :: (Int, Int) -> Board -> [Instr] -> Maybe Board
+runUntilEndState input board instrs = do
+  let startBoard = applyInput input board
+  foldM applyInstr startBoard instrs
 
-instrsAndBoard :: (Int, Int) -> [Int] -> Maybe ([Instr], Board)
-instrsAndBoard input boardList = do
-  codes <- instrs boardList
-  let board = applyInput input (mkBoard boardList)
-  return (codes, board)
+extractOutput :: Board -> Maybe Int
+extractOutput = (M.!? 0)
 
-applyOpcodes :: Board -> [Instr] -> Maybe Board
-applyOpcodes = foldM applyOpcode
+runProgram :: (Int, Int) -> Board -> [Instr] -> Maybe Int
+runProgram input board = extractOutput <=< runUntilEndState input board
 
-runProgram :: [Int] -> (Int, Int) -> Maybe Int
-runProgram boardList input = do
-  (instrs, startBoard) <- instrsAndBoard input boardList
-  newBoard             <- applyOpcodes startBoard instrs
-  newBoard M.!? 0
+solve1 :: (Board, [Instr]) -> Maybe Int
+solve1 = uncurry (runProgram (12, 2))
 
-solve1 :: [Int] -> Maybe Int
-solve1 boardList = runProgram boardList (12, 2)
-
-solve2 :: [Int] -> Maybe Int
-solve2 boardList = do
+solve2 :: (Board, [Instr]) -> Maybe Int
+solve2 (board, instrs) = do
   let inputs = [ (x, y) | x <- [0 .. 99], y <- [0 .. 99] ]
-  (noun, verb) <- find ((== Just 19690720) . runProgram boardList) inputs
+  (noun, verb) <- List.find ((== Just 19690720) . run) inputs
   return (100 * noun + verb)
+  where run input =  runProgram input board instrs
 
 problem :: Problem
-problem = Problem { parser = P.int `sepBy` P.comma
-                  , solve = solve1 &&& solve2
-                  }
+problem = Problem { parser = Parser.input, solve = solve1 &&& solve2 }
