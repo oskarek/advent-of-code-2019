@@ -28,6 +28,8 @@ dependencies:
 - optparse-applicative
 - megaparsec
 - text
+- mtl
+- safe
 
 library:
   source-dirs: src

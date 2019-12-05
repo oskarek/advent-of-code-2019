@@ -8,9 +8,13 @@ import qualified Data.Text.IO                  as TIO
 
 import qualified Day1.Day1                     as Day1
 import qualified Day2.Day2                     as Day2
+import qualified Day3.Day3                     as Day3
 
 problems :: Map Int Problem
-problems = M.fromList [(1, Day1.problem), (2, Day2.problem)]
+problems = M.fromList
+  [ (1, Day1.problem)
+  , (2, Day2.problem)
+  , (3, Day3.problem) ]
 
 main :: IO ()
 main = do

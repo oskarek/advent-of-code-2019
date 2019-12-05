@@ -1,8 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Day2.Parser
-  ( input
-  )
-where
+module Day2.Parser ( input ) where
 
 import qualified Parsing                       as P
 import           Text.Megaparsec
