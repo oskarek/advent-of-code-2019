@@ -5,4 +5,4 @@ import Test.Hspec.QuickCheck
 import Day4.Day4
 
 spec :: Spec
-spec = undefined
+spec = return ()
